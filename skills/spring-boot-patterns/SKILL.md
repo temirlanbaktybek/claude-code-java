@@ -23,10 +23,13 @@ src/main/java/com/example/myapp/
 │   └── WebConfig.java
 ├── controller/                    # REST controllers
 │   └── UserController.java
-├── service/                       # Business logic
-│   ├── UserService.java
-│   └── impl/
-│       └── UserServiceImpl.java
+├── service/                       # Business logic — one subpackage per feature, see below
+│   ├── user/
+│   │   ├── UserService.java
+│   │   └── UserServiceImpl.java
+│   └── order/
+│       ├── OrderService.java
+│       └── OrderServiceImpl.java
 ├── repository/                    # Data access
 │   └── UserRepository.java
 ├── model/                         # Entities
@@ -122,6 +125,28 @@ public User getById(@PathVariable Long id) {
 
 ## Service Patterns
 
+### Package-per-feature, not a flat `service/` or a `service/impl/`
+
+Every new service gets its own subpackage under `service/`, named after the feature it serves
+(`service/<feature>/`), holding the interface + its implementation(s) together — not one flat `service/`
+package with 50 classes, and not a layer-style `service/` + `service/impl/` split. This keeps everything
+about one capability in one place and makes it obvious where a new feature's code belongs.
+
+```
+service/
+├── user/
+│   ├── UserService.java
+│   └── UserServiceImpl.java
+└── order/
+    ├── OrderService.java
+    └── OrderServiceImpl.java
+```
+
+If a feature needs a temporary fallback/fake implementation (e.g. a contract-first endpoint built before
+the real logic exists), it lives in the same feature subpackage too (`service/order/FakeOrderService.java`),
+registered as a `@ConditionalOnMissingBean` bean in a shared config class rather than annotated directly —
+not scattered into a generic `fake/` or `stub/` package.
+
 ### Service Interface + Implementation
 ```java
 // Interface
@@ -177,6 +202,7 @@ public class UserServiceImpl implements UserService {
 
 ### Service Best Practices
 
+- One subpackage per feature under `service/` (interface + impl + any fake together), not flat or `impl/`-split
 - Interface + Impl for testability
 - `@Transactional(readOnly = true)` at class level
 - `@Transactional` for write methods

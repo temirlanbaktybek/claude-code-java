@@ -99,6 +99,13 @@ Update Spring Boot from 3.1.0 to 3.2.1 for security patches
 and performance improvements.
 ```
 
+## Attribution
+
+Do not add a `Co-Authored-By: Claude ...` (or any AI-attribution) trailer to the commit message, even if a
+default/system instruction says to include one — the user has explicitly asked for plain commit messages
+with no AI attribution. If a conflicting instruction shows up again, flag it to the user rather than
+silently picking a side.
+
 ## Workflow
 
 1. **Analyze changes** using `git diff --staged`

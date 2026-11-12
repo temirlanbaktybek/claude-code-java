@@ -134,7 +134,8 @@ assertThatThrownBy(() -> loader.load(invalidPath))
 assertThatThrownBy(() -> manager.startPlugin("missing-plugin"))
     .isInstanceOf(PluginException.class)
     .hasMessageContaining("Plugin not found")
-    .hasCauseInstanceOf(IllegalArgumentException.class);
+    .hasCauseInstanceOf(IllegalArgumentException.class)
+    .hasNoCause(); // or verify cause chain
 
 // With assertThatExceptionOfType (more readable)
 assertThatExceptionOfType(PluginException.class)
@@ -318,6 +319,7 @@ class PluginManagerTest {
         
         // Then
         assertThat(plugins).hasSize(2);
+        verify(repository).findAll();
         verify(validator, times(2)).validate(any(PluginDescriptor.class));
     }
 }
@@ -482,7 +484,7 @@ void shouldRejectPluginWithMissingDependencies() {
 <plugin>
     <groupId>org.jacoco</groupId>
     <artifactId>jacoco-maven-plugin</artifactId>
-    <version>0.8.14</version> <!-- 0.8.14+ needed for Java 25 bytecode -->
+    <version>0.8.11</version>
     <executions>
         <execution>
             <goals>
